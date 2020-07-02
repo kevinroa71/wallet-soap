@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity(repositoryClass=ClienteRepository::class)
  * @UniqueEntity("email")
+ * @UniqueEntity("documento")
  */
 class Cliente
 {
@@ -27,7 +28,7 @@ class Cliente
      *      max=100,
      *      allowEmptyString = false
      * )
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100, unique=true)
      */
     protected $documento;
 
@@ -45,7 +46,7 @@ class Cliente
     /**
      * @Assert\NotNull
      * @Assert\Email
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     protected $email;
 
@@ -55,6 +56,11 @@ class Cliente
      * @ORM\Column(type="string", length=20)
      */
     protected $celular;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Wallet::class, mappedBy="cliente", cascade={"persist", "remove"})
+     */
+    protected $wallet;
 
 
     public function getId(): ?int
@@ -103,6 +109,23 @@ class Cliente
     public function setCelular(string $celular): self
     {
         $this->celular = $celular;
+        return $this;
+    }
+
+    public function getWallet(): ?Wallet
+    {
+        return $this->wallet;
+    }
+
+    public function setWallet(Wallet $wallet): self
+    {
+        $this->wallet = $wallet;
+
+        // set the owning side of the relation if necessary
+        if ($wallet->getCliente() !== $this) {
+            $wallet->setCliente($this);
+        }
+
         return $this;
     }
 }

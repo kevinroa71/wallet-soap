@@ -25,6 +25,15 @@ class ClienteRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
+    public function findOneByDocumentoAndCelular(string $documento, string $celular)
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.documento = :documento AND c.celular = :celular')
+            ->setParameter('documento', $documento)
+            ->setParameter('celular', $celular)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
     // /**
     //  * @return Cliente[] Returns an array of Cliente objects
