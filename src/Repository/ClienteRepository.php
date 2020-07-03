@@ -2,9 +2,14 @@
 
 namespace App\Repository;
 
+use App\Entity\Pagos;
 use App\Entity\Cliente;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Cliente|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,8 +19,13 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ClienteRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    protected $session;
+    protected $mailer;
+
+    public function __construct(ManagerRegistry $registry, SessionInterface $session, MailerInterface $mailer)
     {
+        $this->session = $session;
+        $this->mailer = $mailer;
         parent::__construct($registry, Cliente::class);
     }
 
@@ -35,32 +45,43 @@ class ClienteRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    // /**
-    //  * @return Cliente[] Returns an array of Cliente objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function savePago(Cliente $cliente, Pagos $pago)
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        if (!$this->session->isStarted()) {
+            $this->session->start();
+        }
 
-    /*
-    public function findOneBySomeField($value): ?Cliente
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $pago->setWallet($cliente->getWallet());
+        $pago->setSession($this->session->getId());
+
+        $this->_em->getConnection()->beginTransaction();
+        try {
+            $this->_em->persist($pago);
+            $this->_em->flush();
+            $this->sendEmail($cliente->getEmail(), $pago->getToken());
+            $this->_em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->_em->getConnection()->rollBack();
+            throw $e;
+        }
     }
-    */
+
+
+    protected function sendEmail(string $correo, string $token)
+    {
+        // Enviar correo
+        $mensaje = sprintf(
+            "Ingrese el siguiente token en la ventana de confirmacion de pago: %s",
+            $token
+        );
+        $email = (new Email())
+            ->from(new Address('wallet@example.com', 'Info'))
+            ->to($correo)
+            ->replyTo('no-reply@example.com')
+            ->priority(Email::PRIORITY_HIGH)
+            ->subject('Wallet: Confirmacion de Pago')
+            ->text($mensaje)
+            ->html($mensaje);
+        $this->mailer->send($email);
+    }
 }

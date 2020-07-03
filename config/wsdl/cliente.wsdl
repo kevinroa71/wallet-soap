@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://localhost:8000/index.php/soap" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="App.Service.ClienteService" targetNamespace="http://localhost:8000/index.php/soap">
+  <types>
+    <xsd:schema targetNamespace="http://localhost:8000/index.php/soap">
+      <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+    </xsd:schema>
+  </types>
+  <portType name="App.Service.ClienteServicePort">
+    <operation name="registroCliente">
+      <documentation>Servicio para registrar clientes</documentation>
+      <input message="tns:registroClienteIn"/>
+      <output message="tns:registroClienteOut"/>
+    </operation>
+    <operation name="recargarBilletera">
+      <documentation>Servicio para recargar el saldo de la billetera</documentation>
+      <input message="tns:recargarBilleteraIn"/>
+      <output message="tns:recargarBilleteraOut"/>
+    </operation>
+    <operation name="consultarSaldo">
+      <documentation>Servicio para consultar el saldo</documentation>
+      <input message="tns:consultarSaldoIn"/>
+      <output message="tns:consultarSaldoOut"/>
+    </operation>
+    <operation name="pagar">
+      <documentation>Servicio para crear un pago por una compra</documentation>
+      <input message="tns:pagarIn"/>
+      <output message="tns:pagarOut"/>
+    </operation>
+    <operation name="confirmarPago">
+      <documentation>Servicio para confirmar un pago y descontar el saldo de la billetera</documentation>
+      <input message="tns:confirmarPagoIn"/>
+      <output message="tns:confirmarPagoOut"/>
+    </operation>
+  </portType>
+  <binding name="App.Service.ClienteServiceBinding" type="tns:App.Service.ClienteServicePort">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="registroCliente">
+      <soap:operation soapAction="http://localhost:8000/index.php/soap#registroCliente"/>
+      <input>
+        <soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8000/index.php/soap"/>
+      </input>
+      <output>
+        <soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8000/index.php/soap"/>
+      </output>
+    </operation>
+    <operation name="recargarBilletera">
+      <soap:operation soapAction="http://localhost:8000/index.php/soap#recargarBilletera"/>
+      <input>
+        <soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8000/index.php/soap"/>
+      </input>
+      <output>
+        <soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8000/index.php/soap"/>
+      </output>
+    </operation>
+    <operation name="consultarSaldo">
+      <soap:operation soapAction="http://localhost:8000/index.php/soap#consultarSaldo"/>
+      <input>
+        <soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8000/index.php/soap"/>
+      </input>
+      <output>
+        <soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8000/index.php/soap"/>
+      </output>
+    </operation>
+    <operation name="pagar">
+      <soap:operation soapAction="http://localhost:8000/index.php/soap#pagar"/>
+      <input>
+        <soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8000/index.php/soap"/>
+      </input>
+      <output>
+        <soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8000/index.php/soap"/>
+      </output>
+    </operation>
+    <operation name="confirmarPago">
+      <soap:operation soapAction="http://localhost:8000/index.php/soap#confirmarPago"/>
+      <input>
+        <soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8000/index.php/soap"/>
+      </input>
+      <output>
+        <soap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8000/index.php/soap"/>
+      </output>
+    </operation>
+  </binding>
+  <message name="registroClienteIn">
+    <part name="documento" type="xsd:string"/>
+    <part name="nombres" type="xsd:string"/>
+    <part name="email" type="xsd:string"/>
+    <part name="celular" type="xsd:string"/>
+  </message>
+  <message name="registroClienteOut">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="recargarBilleteraIn">
+    <part name="documento" type="xsd:string"/>
+    <part name="celular" type="xsd:string"/>
+    <part name="valor" type="xsd:float"/>
+  </message>
+  <message name="recargarBilleteraOut">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="consultarSaldoIn">
+    <part name="documento" type="xsd:string"/>
+    <part name="celular" type="xsd:string"/>
+  </message>
+  <message name="consultarSaldoOut">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="pagarIn">
+    <part name="documento" type="xsd:string"/>
+    <part name="celular" type="xsd:string"/>
+    <part name="valor" type="xsd:float"/>
+    <part name="descripcion" type="xsd:string"/>
+  </message>
+  <message name="pagarOut">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="confirmarPagoIn">
+    <part name="token" type="xsd:string"/>
+    <part name="session" type="xsd:anyType"/>
+  </message>
+  <message name="confirmarPagoOut">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <service name="App.Service.ClienteServiceService">
+    <port name="App.Service.ClienteServicePort" binding="tns:App.Service.ClienteServiceBinding">
+      <soap:address location="http://localhost:8000/index.php/soap"/>
+    </port>
+  </service>
+</definitions>

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\WalletRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -27,6 +29,16 @@ class Wallet
      * @ORM\JoinColumn(nullable=false)
      */
     protected $cliente;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Pagos::class, mappedBy="wallet")
+     */
+    private $pagos;
+
+    public function __construct()
+    {
+        $this->pagos = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -65,5 +77,36 @@ class Wallet
     public function descontarSaldo(float $valor)
     {
         $this->saldo = $this->saldo-$valor;
+    }
+
+    /**
+     * @return Collection|Pagos[]
+     */
+    public function getPagos(): Collection
+    {
+        return $this->pagos;
+    }
+
+    public function addPago(Pagos $pago): self
+    {
+        if (!$this->pagos->contains($pago)) {
+            $this->pagos[] = $pago;
+            $pago->setWallet($this);
+        }
+
+        return $this;
+    }
+
+    public function removePago(Pagos $pago): self
+    {
+        if ($this->pagos->contains($pago)) {
+            $this->pagos->removeElement($pago);
+            // set the owning side to null (unless already changed)
+            if ($pago->getWallet() === $this) {
+                $pago->setWallet(null);
+            }
+        }
+
+        return $this;
     }
 }
