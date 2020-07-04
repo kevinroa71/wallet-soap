@@ -81,12 +81,12 @@ class Pagos
         return $this;
     }
 
-    public function getValor(): ?int
+    public function getValor(): ?float
     {
         return $this->valor;
     }
 
-    public function setValor(int $valor): self
+    public function setValor(float $valor): self
     {
         $this->valor = $valor;
 

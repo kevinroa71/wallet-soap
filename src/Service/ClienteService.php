@@ -179,7 +179,7 @@ class ClienteService
 
         $this->repo_pagos->save($pago);
 
-        return $this->serializeResponse(true, 200, ["msg" => "Payment was successful!"]);
+        return $this->serializeResponse(true, 200, ["msg" => "Payment was successful!", "saldo" => $wallet->getSaldo()]);
     }
 
 
