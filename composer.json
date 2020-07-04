@@ -5,6 +5,8 @@
         "php": "^7.2.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-json": "*",
+        "ext-soap": "*",
         "doctrine/annotations": "^1.10",
         "php2wsdl/php2wsdl": "^0.6.1",
         "sensio/framework-extra-bundle": "^5.5",
